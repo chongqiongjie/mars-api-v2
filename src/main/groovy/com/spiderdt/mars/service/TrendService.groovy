@@ -39,6 +39,7 @@ class TrendService {
     }
 
     def queryAllProduct(data_source) {
+        slog.info()
         trendDao.queryAllProduct(data_source)
     }
 
