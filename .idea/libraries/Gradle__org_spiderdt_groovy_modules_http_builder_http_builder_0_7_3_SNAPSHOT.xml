@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Gradle: org.spiderdt.groovy.modules.http-builder:http-builder:0.7.3-SNAPSHOT">
-    <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/org/spiderdt/groovy/modules/http-builder/http-builder/0.7.3-SNAPSHOT/http-builder-0.7.3-SNAPSHOT.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

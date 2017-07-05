@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spiderdt.mars.dao.TrendDao">
+
+    <select id="queryCategory" resultType="hashmap">
+      select category_1,category_2,product_name from
+        stg.d_${data_source}_promo_scaledrd_date product
+        GROUP BY category_1, category_2, product_name
+    </select>
+    <select id="queryAllProduct" resultType="hashmap">
+      select DISTINCT product_name from
+        stg.d_${data_source}_promo_scaledrd_date product
+    </select>
+
+    <!--不确定sum的列应该是order_cnt还是quantity-->
+    <!--<select id="queryProductQuantity" resultType="hashmap">-->
+    <!--SELECT format.barcode,product_name, sum(quantity) quantity-->
+    <!--FROM stg.${data_source}_sku_day_format format INNER JOIN stg.d_${data_source}_promo_scaledrd_date product-->
+    <!--ON format.barcode = product.barcode-->
+    <!--<choose>-->
+    <!--<when test="status == 1">-->
+    <!--WHERE product_name = #{product_name}-->
+    <!--</when>-->
+    <!--<when test="status == 3">-->
+    <!--WHERE category_2 = #{category_2}-->
+    <!--</when>-->
+    <!--<when test="status == 4">-->
+    <!--WHERE category_1 = #{category_1}-->
+    <!--</when>-->
+    <!--<when test="status == 2">-->
+    <!--</when>-->
+    <!--</choose>-->
+    <!--GROUP BY product_name ,format.barcode ORDER BY quantity DESC-->
+    <!--</select>-->
+    <select id="queryProductQuantity" resultType="hashmap">
+        WITH A AS (
+        SELECT DISTINCT product_name ,barcode FROM stg.d_${data_source}_promo_scaledrd_date
+         <choose>
+            <when test="status == 1">
+                WHERE product_name = #{product_name}
+            </when>
+            <when test="status == 3">
+                WHERE category_2 = #{category_2}
+            </when>
+            <when test="status == 4">
+                WHERE category_1 = #{category_1}
+            </when>
+            <when test="status == 2">
+            </when>
+          </choose>
+        )
+        SELECT product_name,sum(quantity) quantity FROM stg.${data_source}_sku_day_format format INNER JOIN A
+        ON A.barcode=format.barcode  GROUP BY product_name ORDER BY quantity DESC
+    </select>
+
+</mapper>
