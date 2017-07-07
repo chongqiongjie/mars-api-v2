@@ -5,7 +5,7 @@
 <mapper namespace="com.spiderdt.mars.dao.CommonDao">
 
     <select id="dateRange" resultType="hashMap">
-        select max(date),min(date) FROM stg.d_${data_source}_preddata
+        select max(date),min(date) FROM stg.d_${data_source}_promo_scaledrd_date
     </select>
 
 </mapper>
