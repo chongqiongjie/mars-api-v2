@@ -6,7 +6,7 @@
 
     <select id="queryLastMonthAvg" resultType="hashmap">
         WITH A AS (
-        SELECT ppg_id FROM stg.mars_${data_source}_promo_scaledrd_date
+        SELECT ppg_id FROM model.mars_${data_source}_promo_scaledrd_date
         <choose>
             <when test="var != 'category_1'">
                 WHERE
@@ -21,7 +21,7 @@
         avg(exp(reduced.coef_model1_debut * pred.debut))               AS effect_debut,
         avg(exp(reduced.coef_model1_discount * pred.discount))         AS effect_discount,
         avg(exp(reduced.coef_model1_ln_baseprice * pred.ln_baseprice)) AS effect_ln_baseprice
-        FROM stg.mars_${data_source}_preddata pred LEFT JOIN stg.mars_${data_source}_coeffs_final_reduced reduced
+        FROM model.mars_${data_source}_preddata pred LEFT JOIN model.mars_${data_source}_coeffs_final_reduced reduced
         ON pred.ppg_id = reduced.ppg_id
         WHERE pred.ppg_id IN (SELECT ppg_id FROM A)
         AND date > #{last_date}::TIMESTAMP + interval '-1 month'
