@@ -1,5 +1,7 @@
 package com.spiderdt.mars.controller
 
+import com.spiderdt.mars.service.CommonService
+import com.spiderdt.mars.service.SubplanService
 import org.json.JSONObject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -13,26 +15,39 @@ import org.springframework.web.bind.annotation.ResponseBody
 import javax.servlet.http.HttpServletRequest
 
 /**
- * Created by kun on 2017/7/3.
+ * Created by kun on 2017/7/10.
  */
 @Controller
-class SubPlanController {
+class SubplanController {
 
-//    @Autowired
-//    MarsCreateSubplanService marsCreateSubplanService
-//
-//    @Autowired
-//    MarsExecuteCreateService marsExecuteCreateService
-//
-//    @Autowired
-//    MarsDeleteSubplanService marsDeleteSubplanService
-//
-//    @Autowired
-//    MarsShowSubplanService marsShowSubplanService
-//
-//    @Autowired
-//    MarsListSubplanService marsListSubplanService
-//
+    @Autowired
+    SubplanService subplanService
+
+    @Autowired
+    CommonService commonService
+
+    @RequestMapping(value = "/createplan/trendarea", method = RequestMethod.GET)
+    @ResponseBody
+    def getComparisonScore(HttpServletRequest request) {
+        JSONObject json = new JSONObject()
+        try {
+            def data_source = "mars"
+            def category_1 = request.getParameter("category_1")
+            def category_2 = request.getParameter("category_2")
+            def product_name = request.getParameter("product_name")
+            def last_month_avg = subplanService.queryLastMonthAvg(data_source, category_1, category_2, product_name)
+            def last_date = commonService.dateRange(data_source).max
+            def data = [avg_cat  : last_month_avg,
+                        last_date: last_date]
+            json = [status: "success",
+                    data  : data]
+        } catch (Exception e) {
+            json = [status : "failure",
+                    message: e.message]
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(json.toString())
+    }
+
 //    @RequestMapping(value = "/createplan/subplan", method = RequestMethod.POST)
 //    @ResponseBody
 //    def CreateSubplan(@RequestBody Map<String, Object> params) {

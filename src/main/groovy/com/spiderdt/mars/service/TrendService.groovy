@@ -189,27 +189,5 @@ class TrendService {
     }
 
 
-    def queryDefaultSpline(data_source, category_1, category_2, product_name) {
-        def last_date = commonService.dateRange(data_source).max
-        def var = "category_1"
-        def c_list = new ArrayList()
-        if (category_1 != null) {
-            c_list.add("category_1 = '$category_1'")
-            var = "category_2"
-        }
-        if (category_2 != null) {
-            c_list.add("category_2 = '$category_2'")
-            var = "product_name"
-        }
-        if (product_name != null) {
-            c_list.add("product_name = '$product_name'")
-            var = "product_name"
-        }
-        slog.info("category list is " + c_list)
-        def map = [data_source: data_source,
-                   list       : c_list,
-                   last_date  : last_date,
-                   var        : var]
-        trendDao.queryDefaultSpline(map)
-    }
+
 }

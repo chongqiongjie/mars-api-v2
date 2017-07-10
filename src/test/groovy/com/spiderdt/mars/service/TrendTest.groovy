@@ -1,5 +1,6 @@
 package com.spiderdt.mars.service
 
+import com.spiderdt.mars.util.Slog
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,10 +16,13 @@ class TrendTest extends GroovyTestCase {
     @Autowired
     TrendService trendService
 
+    @Autowired
+    Slog slog
+
     @Test
     void categoryTest() {
         def data_source = "mars"
-        println trendService.getCategory(data_source)
+        slog.info trendService.getCategory(data_source)
     }
 
     @Test
@@ -26,12 +30,12 @@ class TrendTest extends GroovyTestCase {
         def data_source = "mars"
         def category_1 = null
 //        def category_1 = 1.0000000000000000
-//        def category_2 = 1.0000000000000000
-        def category_2 = null
+        def category_2 = 1.0000000000000000
+//        def category_2 = null
         def product_name = "tutuanna 打底裤 秋冬厚款里起毛厚绒保暖裤300D"
 //        def product_name = null
         def monthOrWeek = "month"
-        println trendService.queryProductQuantity(data_source, category_1, category_2, product_name, monthOrWeek)
+        slog.info trendService.queryProductQuantity(data_source, category_1, category_2, product_name, monthOrWeek)
     }
 
     @Test
@@ -44,7 +48,7 @@ class TrendTest extends GroovyTestCase {
 //        def product_name = "tutuanna 打底裤 秋冬厚款里起毛厚绒保暖裤300D"
         def product_name = null
         def monthOrWeek = "month"
-        println trendService.queryComparison(data_source, category_1, category_2, product_name, monthOrWeek)
+        slog.info trendService.queryComparison(data_source, category_1, category_2, product_name, monthOrWeek)
     }
 
     @Test
@@ -56,18 +60,8 @@ class TrendTest extends GroovyTestCase {
 //        def category_2 = null
 //        def product_name = "tutuanna 打底裤 秋冬厚款里起毛厚绒保暖裤300D"
         def product_name = null
-        println trendService.querySpline(data_source, category_1, category_2, product_name)
+        slog.info trendService.querySpline(data_source, category_1, category_2, product_name)
     }
- @Test
-    void queryDefaultSplineTest() {
-        def data_source = "mars"
-        def category_1 = null
-//        def category_1 = 1.0000000000000000
-//        def category_2 = 1.0000000000000000
-        def category_2 = null
-//        def product_name = "tutuanna 打底裤 秋冬厚款里起毛厚绒保暖裤300D"
-        def product_name = null
-        println trendService.queryDefaultSpline(data_source, category_1, category_2, product_name)
-    }
+
 
 }

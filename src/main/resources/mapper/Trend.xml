@@ -6,17 +6,17 @@
 
     <select id="queryCategory" resultType="hashmap">
       select category_1,category_2,product_name from
-        stg.d_${data_source}_promo_scaledrd_date product
+        stg.mars_${data_source}_promo_scaledrd_date product
         GROUP BY category_1, category_2, product_name
     </select>
     <select id="queryAllProduct" resultType="hashmap">
       select DISTINCT product_name from
-        stg.d_${data_source}_promo_scaledrd_date product
+        stg.mars_${data_source}_promo_scaledrd_date product
     </select>
 
     <select id="queryCategoryQuantity" resultType="hashmap">
         WITH A AS (
-        SELECT DISTINCT ${var} ,barcode FROM stg.d_${data_source}_promo_scaledrd_date
+        SELECT DISTINCT ${var}, barcode, date FROM stg.mars_${data_source}_promo_scaledrd_date
         <choose>
             <when test="var != 'category_1'">
                 WHERE
@@ -26,14 +26,14 @@
             </when>
         </choose>
         )
-        SELECT ${var},sum(quantity) quantity FROM stg.${data_source}_sku_day_format format INNER JOIN A
+        SELECT ${var},sum(quantity) quantity FROM stg.mars_${data_source}_sku_day_format format INNER JOIN A
         ON A.barcode=format.barcode AND A.date = format.pay_date WHERE
         date > #{last_date}::TIMESTAMP + interval '-1 ${monthOrWeek}'
         GROUP BY ${var} ORDER BY quantity DESC
     </select>
     <select id="queryProductQuantity" resultType="hashmap">
         WITH A AS (
-        SELECT DISTINCT product_name ,barcode FROM stg.d_${data_source}_promo_scaledrd_date
+        SELECT DISTINCT product_name, barcode, date FROM stg.mars_${data_source}_promo_scaledrd_date
         <choose>
             <when test="var != 'category_1'">
                 WHERE
@@ -43,15 +43,16 @@
             </when>
         </choose>
         )
-        SELECT product_name, pay_date, sum(quantity) quantity FROM stg.${data_source}_sku_day_format format INNER JOIN A
-        ON A.barcode=format.barcode WHERE
-        pay_date> #{last_date}::TIMESTAMP + interval '-1 ${monthOrWeek}'
+        SELECT product_name, pay_date, sum(quantity) quantity FROM stg.mars_${data_source}_sku_day_format format INNER
+        JOIN A
+        ON A.barcode=format.barcode AND A.date = format.pay_date WHERE
+        date > #{last_date}::TIMESTAMP + interval '-1 ${monthOrWeek}'
         GROUP BY product_name, pay_date ORDER BY quantity DESC
     </select>
 
     <select id="queryHBComparison" resultType="hashmap">
         WITH A AS (
-        SELECT DISTINCT ${var} ,barcode FROM stg.d_${data_source}_promo_scaledrd_date
+        SELECT DISTINCT ${var}, barcode, date FROM stg.mars_${data_source}_promo_scaledrd_date
         <choose>
             <when test="var != 'category_1'">
                 WHERE
@@ -61,26 +62,26 @@
             </when>
         </choose>
         ),now AS (
-        SELECT ${var},sum(quantity) quantity FROM stg.${data_source}_sku_day_format format INNER JOIN A
-        ON A.barcode=format.barcode WHERE
-        pay_date> #{last_date}::TIMESTAMP + interval '-1 ${monthOrWeek}'
+        SELECT ${var},sum(quantity) quantity FROM stg.mars_${data_source}_sku_day_format format INNER JOIN A
+        ON A.barcode=format.barcode AND A.date = format.pay_date WHERE
+        date > #{last_date}::TIMESTAMP + interval '-1 ${monthOrWeek}'
         GROUP BY ${var}
         ),hb AS(
-        SELECT ${var},sum(quantity) quantity FROM stg.${data_source}_sku_day_format format INNER JOIN A
-        ON A.barcode=format.barcode WHERE
-        pay_date> #{last_date}::TIMESTAMP + interval '-2 ${monthOrWeek}'
-        AND pay_date &lt;= #{last_date}::TIMESTAMP + interval '-1 ${monthOrWeek}'
+        SELECT ${var},sum(quantity) quantity FROM stg.mars_${data_source}_sku_day_format format INNER JOIN A
+        ON A.barcode=format.barcode AND A.date = format.pay_date WHERE
+        date > #{last_date}::TIMESTAMP + interval '-2 ${monthOrWeek}'
+        AND date &lt;= #{last_date}::TIMESTAMP + interval '-1 ${monthOrWeek}'
         GROUP BY ${var}
         )
         SELECT
-         now.${var},
+        now.${var},
         (now.quantity - hb.quantity)/hb.quantity as hbResult
         FROM now LEFT JOIN hb ON now.${var}=hb.${var}
         ORDER BY hbResult DESC
     </select>
     <select id="queryTBComparison" resultType="hashmap">
         WITH A AS (
-        SELECT DISTINCT ${var} ,barcode FROM stg.d_${data_source}_promo_scaledrd_date
+        SELECT DISTINCT ${var}, barcode, date FROM stg.mars_${data_source}_promo_scaledrd_date
         <choose>
             <when test="var != 'category_1'">
                 WHERE
@@ -90,19 +91,19 @@
             </when>
         </choose>
         ),now AS (
-        SELECT ${var},sum(quantity) quantity FROM stg.${data_source}_sku_day_format format INNER JOIN A
-        ON A.barcode=format.barcode WHERE
-        pay_date> #{last_date}::TIMESTAMP + interval '-1 ${monthOrWeek}'
+        SELECT ${var},sum(quantity) quantity FROM stg.mars_${data_source}_sku_day_format format INNER JOIN A
+        ON A.barcode=format.barcode AND A.date = format.pay_date WHERE
+        date > #{last_date}::TIMESTAMP + interval '-1 ${monthOrWeek}'
         GROUP BY ${var}
         ),tb AS (
-        SELECT ${var},sum(quantity) quantity FROM stg.${data_source}_sku_day_format format INNER JOIN A
-        ON A.barcode=format.barcode WHERE
-        pay_date> #{last_date}::TIMESTAMP + interval '-1 ${monthOrWeek}' + interval '-1 year'
-        AND pay_date &lt;= #{last_date}::TIMESTAMP + interval '-1 year'
+        SELECT ${var},sum(quantity) quantity FROM stg.mars_${data_source}_sku_day_format format INNER JOIN A
+        ON A.barcode=format.barcode AND A.date = format.pay_date WHERE
+        date > #{last_date}::TIMESTAMP + interval '-1 ${monthOrWeek}' + interval '-1 year'
+        AND date &lt;= #{last_date}::TIMESTAMP + interval '-1 year'
         GROUP BY ${var}
         )
         SELECT
-         now.${var},
+        now.${var},
         (now.quantity - tb.quantity)/tb.quantity as tbResult
         FROM now LEFT JOIN tb ON now.${var}=tb.${var}
         ORDER BY tbResult DESC
@@ -110,24 +111,24 @@
 
 
     <select id="querySpline" resultType="hashmap">
-    WITH A AS (
-    SELECT barcode, ppg_id FROM stg.d_${data_source}_promo_scaledrd_date
-    <choose>
-        <when test="var != 'category_1'">
-            WHERE
-            <foreach item="c_list" collection="list" open="" separator="and" close="">
-                ${c_list}
-            </foreach>
-        </when>
-    </choose>
+        WITH A AS (
+        SELECT barcode, ppg_id FROM stg.mars_${data_source}_promo_scaledrd_date
+        <choose>
+            <when test="var != 'category_1'">
+                WHERE
+                <foreach item="c_list" collection="list" open="" separator="and" close="">
+                    ${c_list}
+                </foreach>
+            </when>
+        </choose>
         ), effect AS ( SELECT
         pred.date,
-        sum(pred.predacvbasevol)                                       AS predacvbasevol,
-        sum(exp(reduced.coef_model1_coupon * pred.coupon))             AS effect_coupon,
-        sum(exp(reduced.coef_model1_debut * pred.debut))               AS effect_debut,
-        sum(exp(reduced.coef_model1_discount * pred.discount))         AS effect_discount,
+        sum(pred.predacvbasevol) AS predacvbasevol,
+        sum(exp(reduced.coef_model1_coupon * pred.coupon)) AS effect_coupon,
+        sum(exp(reduced.coef_model1_debut * pred.debut)) AS effect_debut,
+        sum(exp(reduced.coef_model1_discount * pred.discount)) AS effect_discount,
         sum(exp(reduced.coef_model1_ln_baseprice * pred.ln_baseprice)) AS effect_ln_baseprice
-        FROM stg.d_${data_source}_preddata pred LEFT JOIN stg.d_${data_source}_coeffs_final_reduced reduced
+        FROM stg.mars_${data_source}_preddata pred LEFT JOIN stg.mars_${data_source}_coeffs_final_reduced reduced
         ON pred.ppg_id = reduced.ppg_id
         WHERE pred.ppg_id IN (SELECT ppg_id
         FROM A)
@@ -137,9 +138,9 @@
         SELECT
         pay_date,
         sum(quantity - predacvbasevol) AS actual,
-        sum(quantity)                  AS quantity
-        FROM (stg.${data_source}_sku_day_format format INNER JOIN A ON format.barcode = A.barcode)
-        INNER JOIN stg.d_${data_source}_preddata pred ON A.ppg_id = pred.ppg_id AND format.pay_date = pred.date
+        sum(quantity) AS quantity
+        FROM (stg.mars_${data_source}_sku_day_format format INNER JOIN A ON format.barcode = A.barcode)
+        INNER JOIN stg.mars_${data_source}_preddata pred ON A.ppg_id = pred.ppg_id AND format.pay_date = pred.date
         GROUP BY pay_date
         ORDER BY pay_date
         )
@@ -154,29 +155,6 @@
         quantity
         FROM effect
         LEFT JOIN q ON effect.date = q.pay_date
-    </select>
-    <select id="queryDefaultSpline" resultType="hashmap">
-        WITH A AS (
-        SELECT ppg_id FROM stg.d_${data_source}_promo_scaledrd_date
-        <choose>
-            <when test="var != 'category_1'">
-                WHERE
-                <foreach item="c_list" collection="list" open="" separator="and" close="">
-                    ${c_list}
-                </foreach>
-            </when>
-        </choose>
-        )
-        SELECT
-        avg(exp(reduced.coef_model1_coupon * pred.coupon))             AS effect_coupon,
-        avg(exp(reduced.coef_model1_debut * pred.debut))               AS effect_debut,
-        avg(exp(reduced.coef_model1_discount * pred.discount))         AS effect_discount,
-        avg(exp(reduced.coef_model1_ln_baseprice * pred.ln_baseprice)) AS effect_ln_baseprice
-        FROM stg.d_${data_source}_preddata pred LEFT JOIN stg.d_${data_source}_coeffs_final_reduced reduced
-        ON pred.ppg_id = reduced.ppg_id
-        WHERE pred.ppg_id IN (SELECT ppg_id FROM A)
-        AND date > #{last_date}::TIMESTAMP + interval '-1 month'
-
     </select>
 
 </mapper>
