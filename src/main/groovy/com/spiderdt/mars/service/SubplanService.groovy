@@ -19,6 +19,8 @@ class SubplanService {
     SubplanDao subplanDao
     @Autowired
     CommonService commonService
+    @Autowired
+    HttpClientService httpClientService
 
     def queryLastMonthAvg(data_source, category_1, category_2, product_name) {
         def last_date = commonService.dateRange(data_source).max
@@ -44,8 +46,11 @@ class SubplanService {
         subplanDao.queryLastMonthAvg(map)
     }
 
-    def createSubplan(data_source, name, user_id, category, group, product, start_time, end_time, discount, coupon, ln_baseprice, debut){
-        subplanDao.createSubplan(name, user_id, category, group, product, start_time, end_time, "1",
+    def createSubplan(data_source, name, user_id, category, group, product, start_time, end_time, discount, coupon, ln_baseprice, debut) {
+        subplanDao.createSubplan(data_source, name, user_id, category, group, product, start_time, end_time, "1",
                 discount, coupon, ln_baseprice, debut, "create")
+    }
+    def executeSubplan(subplan_url, name, category, group, product, start_time, end_time, drivers){
+        httpClientService.execuSubplan(subplan_url, name, category, group, product, start_time, end_time, drivers)
     }
 }

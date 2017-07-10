@@ -106,7 +106,7 @@ class SubplanController {
         slog.info("drivers:" + drivers)
 
         subplanService.createSubplan(data_source, name, user_id, category, group, product, start_time, end_time, discount, coupon, ln_baseprice, debut)
-        marsExecuteCreateService.create(subplan_url, name, category, group, product, start_time, end_time, drivers)
+        subplanService.executeSubplan(subplan_url, name, category, group, product, start_time, end_time, drivers)
 
         response.put("status", "success")
         return ResponseEntity.status(HttpStatus.OK).body(response.toString())
