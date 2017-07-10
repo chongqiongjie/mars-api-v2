@@ -27,8 +27,8 @@
         </choose>
         )
         SELECT ${var},sum(quantity) quantity FROM stg.${data_source}_sku_day_format format INNER JOIN A
-        ON A.barcode=format.barcode WHERE
-        pay_date> #{last_date}::TIMESTAMP + interval '-1 ${monthOrWeek}'
+        ON A.barcode=format.barcode AND A.date = format.pay_date WHERE
+        date > #{last_date}::TIMESTAMP + interval '-1 ${monthOrWeek}'
         GROUP BY ${var} ORDER BY quantity DESC
     </select>
     <select id="queryProductQuantity" resultType="hashmap">
@@ -155,4 +155,28 @@
         FROM effect
         LEFT JOIN q ON effect.date = q.pay_date
     </select>
+    <select id="queryDefaultSpline" resultType="hashmap">
+        WITH A AS (
+        SELECT ppg_id FROM stg.d_${data_source}_promo_scaledrd_date
+        <choose>
+            <when test="var != 'category_1'">
+                WHERE
+                <foreach item="c_list" collection="list" open="" separator="and" close="">
+                    ${c_list}
+                </foreach>
+            </when>
+        </choose>
+        )
+        SELECT
+        avg(exp(reduced.coef_model1_coupon * pred.coupon))             AS effect_coupon,
+        avg(exp(reduced.coef_model1_debut * pred.debut))               AS effect_debut,
+        avg(exp(reduced.coef_model1_discount * pred.discount))         AS effect_discount,
+        avg(exp(reduced.coef_model1_ln_baseprice * pred.ln_baseprice)) AS effect_ln_baseprice
+        FROM stg.d_${data_source}_preddata pred LEFT JOIN stg.d_${data_source}_coeffs_final_reduced reduced
+        ON pred.ppg_id = reduced.ppg_id
+        WHERE pred.ppg_id IN (SELECT ppg_id FROM A)
+        AND date > #{last_date}::TIMESTAMP + interval '-1 month'
+
+    </select>
+
 </mapper>
