@@ -43,4 +43,9 @@ class SubplanService {
                    var        : var]
         subplanDao.queryLastMonthAvg(map)
     }
+
+    def createSubplan(data_source, name, user_id, category, group, product, start_time, end_time, discount, coupon, ln_baseprice, debut){
+        subplanDao.createSubplan(name, user_id, category, group, product, start_time, end_time, "1",
+                discount, coupon, ln_baseprice, debut, "create")
+    }
 }

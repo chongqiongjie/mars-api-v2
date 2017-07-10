@@ -9,7 +9,5 @@ class Subplan {
     String name
     String exec_time
     String exec_status
-    String is_collect
     String id
-    String inCart
 }

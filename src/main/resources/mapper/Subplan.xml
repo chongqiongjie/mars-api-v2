@@ -17,9 +17,9 @@
         </choose>
         )
         SELECT
-        avg(exp(reduced.coef_model1_coupon * pred.coupon))             AS effect_coupon,
-        avg(exp(reduced.coef_model1_debut * pred.debut))               AS effect_debut,
-        avg(exp(reduced.coef_model1_discount * pred.discount))         AS effect_discount,
+        avg(exp(reduced.coef_model1_coupon * pred.coupon)) AS effect_coupon,
+        avg(exp(reduced.coef_model1_debut * pred.debut)) AS effect_debut,
+        avg(exp(reduced.coef_model1_discount * pred.discount)) AS effect_discount,
         avg(exp(reduced.coef_model1_ln_baseprice * pred.ln_baseprice)) AS effect_ln_baseprice
         FROM model.mars_${data_source}_preddata pred LEFT JOIN model.mars_${data_source}_coeffs_final_reduced reduced
         ON pred.ppg_id = reduced.ppg_id
@@ -28,5 +28,14 @@
 
     </select>
 
+    <insert id="createSubplan">
+        INNER INTO mars.mars_${data_source}_create_subplan
+        (name, user_id, category_1, category_2, product_name, start_time, end_time, create_time, exec_time, exec_status,
+        discount, coupon, effect_ln_baseprice, debut, status)
+        VALUES (#{name},#{user_id},#{category_1},#{category_2},#{product_name},#{start_time},#{end_time},#{create_time},
+        now()::timestamp(0)without time zone,now()::timestamp(0)without time zone,
+        ${discount},${coupon},${effect_ln_baseprice},${debut},#{status})
+
+    </insert>
 
 </mapper>

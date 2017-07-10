@@ -25,7 +25,7 @@ class TrendController {
     @RequestMapping(value = "/trend/category", method = RequestMethod.GET)
     @ResponseBody
     def getCategory() {
-        def data_source = "mars"
+        def data_source = "tutuanna"
         JSONObject json = new JSONObject()
         try {
             def data = trendService.getCategory(data_source)
@@ -45,7 +45,7 @@ class TrendController {
     def getScore(HttpServletRequest request) {
         JSONObject json = new JSONObject()
         try {
-            def data_source = "mars"
+            def data_source = "tutuanna"
             def category_1 = request.getParameter("category_1")
             def category_2 = request.getParameter("category_2")
             def product_name = request.getParameter("product_name")
@@ -64,7 +64,7 @@ class TrendController {
     def getQuantityScore(HttpServletRequest request) {
         JSONObject json = new JSONObject()
         try {
-            def data_source = "mars"
+            def data_source = "tutuanna"
             def category_1 = request.getParameter("category_1")
             def category_2 = request.getParameter("category_2")
             def product_name = request.getParameter("product_name")
@@ -86,7 +86,7 @@ class TrendController {
     def getComparisonScore(HttpServletRequest request) {
         JSONObject json = new JSONObject()
         try {
-            def data_source = "mars"
+            def data_source = "tutuanna"
             def category_1 = request.getParameter("category_1")
             def category_2 = request.getParameter("category_2")
             def product_name = request.getParameter("product_name")
