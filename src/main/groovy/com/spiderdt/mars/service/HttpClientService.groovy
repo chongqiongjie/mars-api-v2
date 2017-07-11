@@ -53,18 +53,21 @@ public class HttpClientService {
     }
 
     // 创建Chronos job
-    def execuSubplan(url, name, category, group, product, start_time, end_time, drivers) {
-        def future = httpScheduler.request(POST, JSON) { req ->
+    def executeSubplan(url, name, category, group, product, start_time, end_time, drivers) {
+        def future = http.request(POST, JSON) { req ->
             uri.path = url
-            body = [name:name,
-                    category:category,
-                    group:group,
-                    product:product,
-                    start_time:start_time,
-                    end_time:end_time,
-                    drivers: drivers.collectEntries {[it.key, it.value/100]}
+            body = [name      : name,
+                    category  : category,
+                    group     : group,
+                    product   : product,
+                    start_time: start_time,
+                    end_time  : end_time,
+                    drivers   : drivers.collectEntries { [it.key, it.value / 100] }
             ]
+            slog.info "url is " + uri
+            slog.info "body is " + body
         }
+        slog.info "execute subplan dirvers is " + drivers
         while (!future.done) {
             Thread.sleep(sleepTime)
         }

@@ -6,7 +6,7 @@
 
     <select id="queryLastMonthAvg" resultType="hashmap">
         WITH A AS (
-        SELECT ppg_id FROM model.mars_${data_source}_promo_scaledrd_date
+        SELECT ppg_id, date, barcode FROM model.mars_${data_source}_promo_scaledrd_date
         <choose>
             <when test="var != 'category_1'">
                 WHERE
@@ -15,27 +15,67 @@
                 </foreach>
             </when>
         </choose>
-        )
+        ),B AS(
         SELECT
-        avg(exp(reduced.coef_model1_coupon * pred.coupon)) AS effect_coupon,
-        avg(exp(reduced.coef_model1_debut * pred.debut)) AS effect_debut,
-        avg(exp(reduced.coef_model1_discount * pred.discount)) AS effect_discount,
-        avg(exp(reduced.coef_model1_ln_baseprice * pred.ln_baseprice)) AS effect_ln_baseprice
+        pred.ppg_id,
+        sum(exp(reduced.coef_model1_coupon * pred.coupon)) AS effect_coupon,
+        sum(exp(reduced.coef_model1_debut * pred.debut)) AS effect_debut,
+        sum(exp(reduced.coef_model1_discount * pred.discount)) AS effect_discount,
+        sum(exp(reduced.coef_model1_ln_baseprice * pred.ln_baseprice)) AS effect_ln_baseprice
         FROM model.mars_${data_source}_preddata pred LEFT JOIN model.mars_${data_source}_coeffs_final_reduced reduced
         ON pred.ppg_id = reduced.ppg_id
-        WHERE pred.ppg_id IN (SELECT ppg_id FROM A)
-        AND date > #{last_date}::TIMESTAMP + interval '-1 month'
+        WHERE date > #{last_date}::TIMESTAMP + interval '-1 month'
+        GROUP BY pred.ppg_id
+        ), C AS (
+        SELECT sum(quantity) all_quantity FROM model.mars_${data_source}_sku_day_format format LEFT JOIN A ON
+        format.barcode = A.barcode and format.pay_date = A.date
+        ),D AS (
+        SELECT barcode,sum(quantity) quantity FROM model.mars_${data_source}_sku_day_format format GROUP BY barcode
+        )
+        SELECT
+        avg((effect_coupon * quantity)/all_quantity) effect_coupon,
+        avg((effect_debut * quantity)/all_quantity) effect_debut,
+        avg((effect_discount * quantity)/all_quantity) effect_discount,
+        avg((effect_ln_baseprice * quantity)/all_quantity) effect_ln_baseprice
+        FROM B LEFT JOIN A ON B.ppg_id = A.ppg_id
+        LEFT JOIN D ON A.barcode = D.barcode
+        CROSS JOIN C
 
     </select>
 
     <insert id="createSubplan">
-        INNER INTO mars.mars_${data_source}_create_subplan
-        (name, user_id, category_1, category_2, product_name, start_time, end_time, create_time, exec_time, exec_status,
+        INSERT INTO mars.mars_create_subplan
+        (name, user_name, category_1, category_2, product_name, start_time, end_time, create_time, exec_time, exec_status,
         discount, coupon, effect_ln_baseprice, debut, status)
-        VALUES (#{name},#{user_id},#{category_1},#{category_2},#{product_name},#{start_time},#{end_time},#{create_time},
-        now()::timestamp(0)without time zone,now()::timestamp(0)without time zone,
+        VALUES (#{name},#{user_name},#{category_1},#{category_2},#{product_name},#{start_time},#{end_time},
+        now()::timestamp, now()::timestamp, ${exec_status},
         ${discount},${coupon},${effect_ln_baseprice},${debut},#{status})
-
     </insert>
 
+    <update id="updateStatusTo0">
+        UPDATE mars.mars_create_subplan SET exec_status='0' WHERE name = #{name} AND user_name = #{user_name}
+    </update>
+
+    <update id="updateSubplanResult">
+        UPDATE  mars.mars_create_subplan SET exec_status='2',subplan_result='${result}'
+        WHERE name = #{name} AND user_name = #{user_name}
+    </update>
+
+    <select id="showSubplan" resultType="String">
+        SELECT subplan_result FROM mars.mars_create_subplan WHERE name = #{name} AND user_name = #{user_name}
+    </select>
+    <select id="listSubplan" resultType="hashmap">
+        SELECT id, name, create_time,
+        CASE exec_status WHEN '0' THEN 'failure'
+                         WHEN '1' THEN 'running'
+                         WHEN '2' THEN 'success'
+                         ELSE 'failure' END AS exec_status
+        FROM mars.mars_create_subplan WHERE user_name = #{user_name} AND status != 'del'
+    </select>
+
+    <update id="updateStatusToDel">
+        UPDATE mars.mars_create_subplan SET status='del' WHERE name = #{name} AND user_name = #{user_name}
+    </update>
+
+    <!--case when pay_date &lt; ('${lastDate}'::timestamp + interval '-${days} day') then 1 end-->
 </mapper>

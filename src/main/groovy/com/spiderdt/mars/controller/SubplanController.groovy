@@ -56,97 +56,100 @@ class SubplanController {
         }
         return ResponseEntity.status(HttpStatus.OK).body(json.toString())
     }
+    @RequestMapping(value = "/createplan/subplan", method = RequestMethod.GET)
+    @ResponseBody
+    def listSubplan(@RequestBody params) {
+        JSONObject json = new JSONObject()
+
+    }
 
     @RequestMapping(value = "/createplan/subplan", method = RequestMethod.POST)
     @ResponseBody
     def CreateSubplan(@RequestBody params) {
-        JSONObject response = new JSONObject()
+        JSONObject json = new JSONObject()
         def data_source = "tutuanna"
-        def user_id = "tutuanna"
-        def name = params.get("name")
-        slog.info("name:" + name)
-        def category = params.get("category")
-        def group = params.get("group")
-        def product = params.get("product")
-        def start_time = params.get("start_time")
-        def end_time = params.get("end_time")
+        try {
+            def user_id = "tutuanna"
+            def name = params.get("name")
+            slog.info("name:" + name)
+            def category = params.get("category")
+            def group = params.get("group")
+            def product = params.get("product")
+            def start_time = params.get("start_time")
+            def end_time = params.get("end_time")
 
 
-        def discountStr = params.get("drivers").get("effect_discount")
-        slog.info("aaaa:" + params.get("drivers"))
-        slog.info("dis:" + discountStr)
-        Double discount
-        if (discountStr == "" || discountStr == null) {
-            discount = 0
-        } else {
-            discount = Double.valueOf(discountStr)
-        }
-        def couponStr = params.get("drivers").get("effect_coupon")
-        Double coupon
-        if (couponStr == "" || couponStr == null) {
-            coupon = 0
-        } else {
-            coupon = Double.valueOf(couponStr)
-        }
-        def ln_basepriceStr = params.get("drivers").get("effect_ln_baseprice")
-        Double ln_baseprice
-        if (ln_basepriceStr == "" || ln_basepriceStr == null) {
-            ln_baseprice = 0
-        } else {
-            ln_baseprice = Double.valueOf(ln_basepriceStr)
-        }
-        def debutStr = params.get("drivers").get("effect_debut")
-        Double debut
-        if (debutStr == "" || discountStr == null) {
-            debut = 0
-        } else {
-            debut = Double.valueOf(debutStr)
-        }
-        def drivers = ["coupon": coupon, "ln_baseprice": ln_baseprice, "debut": debut, "discount": discount]
-        slog.info("drivers:" + drivers)
+            def discountStr = params.get("drivers").get("effect_discount")
+            slog.info("aaaa:" + params.get("drivers"))
+            slog.info("dis:" + discountStr)
+            Double discount
+            if (discountStr == "" || discountStr == null) {
+                discount = 0
+            } else {
+                discount = Double.valueOf(discountStr)
+            }
+            def couponStr = params.get("drivers").get("effect_coupon")
+            Double coupon
+            if (couponStr == "" || couponStr == null) {
+                coupon = 0
+            } else {
+                coupon = Double.valueOf(couponStr)
+            }
+            def ln_basepriceStr = params.get("drivers").get("effect_ln_baseprice")
+            Double ln_baseprice
+            if (ln_basepriceStr == "" || ln_basepriceStr == null) {
+                ln_baseprice = 0
+            } else {
+                ln_baseprice = Double.valueOf(ln_basepriceStr)
+            }
+            def debutStr = params.get("drivers").get("effect_debut")
+            Double debut
+            if (debutStr == "" || discountStr == null) {
+                debut = 0
+            } else {
+                debut = Double.valueOf(debutStr)
+            }
+            def drivers = ["coupon": coupon, "ln_baseprice": ln_baseprice, "debut": debut, "discount": discount]
+            slog.info("drivers:" + drivers)
 
-        subplanService.createSubplan(data_source, name, user_id, category, group, product, start_time, end_time, discount, coupon, ln_baseprice, debut)
-        subplanService.executeSubplan(subplan_url, name, category, group, product, start_time, end_time, drivers)
+            subplanService.createSubplan(name, user_id, category, group, product, start_time, end_time, discount, coupon, ln_baseprice, debut)
+            subplanService.executeSubplan(subplan_url, name, user_id, category, group, product, start_time, end_time, drivers)
 
-        response.put("status", "success")
-        return ResponseEntity.status(HttpStatus.OK).body(response.toString())
+            json = [status: "success"]
+        } catch (Exception e) {
+            json = [status : "failure",
+                    message: e.message]
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(json.toString())
 
     }
-//
-//
-//
-//    @RequestMapping(value = "/createplan/subplan",method = RequestMethod.GET)
-//    @ResponseBody
-//    def listSubplan(){
-//        JSONObject response = new JSONObject()
-//        def data = marsListSubplanService.ListSubplan()
-//
-//        response.put("status", "success")
-//        response.put("data", data)
-//        return ResponseEntity.status(HttpStatus.OK).body(response.todef())
-//
-//    }
-//
-//    @RequestMapping(value = "/createplan/showsubplan", method = RequestMethod.GET)
-//    @ResponseBody
-//    def showSubplan(HttpServletRequest request){
-//        JSONObject response = new JSONObject()
-//        def name = request.getParameter("name")
-//        def result =  marsShowSubplanService.show(name)
-//
-//        response.put("status","success")
-//        response.put("result",result)
-//        return ResponseEntity.status(HttpStatus.OK).body(response.todef())
-//    }
-//
-//    @RequestMapping(value = "/plans/deletesubplan", method = RequestMethod.GET)
-//    @ResponseBody
-//    def delete(HttpServletRequest request) {
-//        JSONObject response = new JSONObject()
-//        def name = request.getParameter("name")
-//
-//        marsDeleteSubplanService.delete(name)
-//        response.put("status", "success")
-//        return ResponseEntity.status(HttpStatus.OK).body(response.todef())
-//    }
+
+    @RequestMapping(value = "/createplan/showsubplan", method = RequestMethod.GET)
+    @ResponseBody
+    def showSubplan(HttpServletRequest request) {
+        JSONObject json = new JSONObject()
+        try {
+            def name = request.getParameter("name")
+            def user_name = "tutuanna"
+
+            json = [status: "success",
+                    result: subplanService.showSubplan(name, user_name)]
+        } catch (Exception e) {
+            json = [status : "failure",
+                    message: e.message]
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(json.toString())
+    }
+
+    @RequestMapping(value = "/plans/deletesubplan", method = RequestMethod.GET)
+    @ResponseBody
+    def delete(HttpServletRequest request) {
+        JSONObject response = new JSONObject()
+        def name = request.getParameter("name")
+        def user_name = "tutuanna"
+        subplanService.deleteSubplan(name,user_name)
+        response.put("status", "success")
+        return ResponseEntity.status(HttpStatus.OK).body(response.todef())
+    }
 }
