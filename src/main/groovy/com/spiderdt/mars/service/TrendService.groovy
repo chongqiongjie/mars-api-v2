@@ -44,30 +44,12 @@ class TrendService {
 
     def queryProductQuantity(data_source, category_1, category_2, product_name, monthOrWeek) {
         def last_date = commonService.dateRange(data_source).max
-        def var = "category_1"
-        def c_list = new ArrayList()
-        if (category_1 != null) {
-            c_list.add("category_1 = '$category_1'")
-            var = "category_2"
-        }
-        if (category_2 != null) {
-            c_list.add("category_2 = '$category_2'")
-            var = "product_name"
-        }
-        if (product_name != null) {
-            c_list.add("product_name = '$product_name'")
-            var = "product_name"
-        }
+        def c_list = commonService.handelCategory(category_1, category_2, product_name)
         slog.info("category list is " + c_list)
-
-        if (c_list.size() == 0) {
-            var = "category_1"
-        }
-
         def map = [data_source: data_source,
-                   list       : c_list,
+                   list       : c_list.c_list,
                    last_date  : last_date,
-                   var        : var,
+                   var        : c_list.var,
                    monthOrWeek: monthOrWeek]
         def data
         if (product_name == null) {
@@ -98,26 +80,13 @@ class TrendService {
 
     def queryComparison(data_source, category_1, category_2, product_name, monthOrWeek) {
         def last_date = commonService.dateRange(data_source).max
-        def var = "category_1"
-        def c_list = new ArrayList()
-        if (category_1 != null) {
-            c_list.add("category_1 = '$category_1'")
-            var = "category_2"
-        }
-        if (category_2 != null) {
-            c_list.add("category_2 = '$category_2'")
-            var = "product_name"
-        }
-        if (product_name != null) {
-            c_list.add("product_name = '$product_name'")
-            var = "product_name"
-        }
+        def c_list = commonService.handelCategory(category_1, category_2, product_name)
         slog.info("category list is " + c_list)
 
         def map = [data_source: data_source,
-                   list       : c_list,
+                   list       : c_list.c_list,
                    last_date  : last_date,
-                   var        : var,
+                   var        : c_list.var,
                    monthOrWeek: monthOrWeek]
         def hb_data = trendDao.queryHBComparison(map)
         def tb_data = trendDao.queryTBComparison(map)
@@ -165,29 +134,16 @@ class TrendService {
 
     def querySpline(data_source, category_1, category_2, product_name) {
         def last_date = commonService.dateRange(data_source).max
-        def var = "category_1"
-        def c_list = new ArrayList()
-        if (category_1 != null) {
-            c_list.add("category_1 = '$category_1'")
-            var = "category_2"
-        }
-        if (category_2 != null) {
-            c_list.add("category_2 = '$category_2'")
-            var = "product_name"
-        }
-        if (product_name != null) {
-            c_list.add("product_name = '$product_name'")
-            var = "product_name"
-        }
+        def c_list = commonService.handelCategory(category_1, category_2, product_name)
+
         slog.info("category list is " + c_list)
 
         def map = [data_source: data_source,
-                   list       : c_list,
+                   list       : c_list.c_list,
                    last_date  : last_date,
-                   var        : var]
+                   var        : c_list.var]
         trendDao.querySpline(map)
     }
-
 
 
 }

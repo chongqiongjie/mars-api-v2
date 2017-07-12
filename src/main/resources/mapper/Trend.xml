@@ -112,7 +112,7 @@
 
     <select id="querySpline" resultType="hashmap">
         WITH A AS (
-        SELECT barcode, ppg_id FROM model.mars_${data_source}_promo_scaledrd_date
+        SELECT barcode, ppg_id, date FROM model.mars_${data_source}_promo_scaledrd_date
         <choose>
             <when test="var != 'category_1'">
                 WHERE
@@ -139,7 +139,7 @@
         pay_date,
         sum(quantity - predacvbasevol) AS actual,
         sum(quantity) AS quantity
-        FROM (model.mars_${data_source}_sku_day_format format INNER JOIN A ON format.barcode = A.barcode)
+        FROM (model.mars_${data_source}_sku_day_format format INNER JOIN A ON format.barcode = A.barcode AND format.pay_date = A.date)
         INNER JOIN model.mars_${data_source}_preddata pred ON A.ppg_id = pred.ppg_id AND format.pay_date = pred.date
         GROUP BY pay_date
         ORDER BY pay_date
@@ -154,7 +154,7 @@
         actual,
         quantity
         FROM effect
-        LEFT JOIN q ON effect.date = q.pay_date
+        INNER JOIN q ON effect.date = q.pay_date
     </select>
 
 </mapper>
