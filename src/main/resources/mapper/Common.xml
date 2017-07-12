@@ -7,5 +7,9 @@
     <select id="dateRange" resultType="hashMap">
         select max(date),min(date) FROM model.mars_${data_source}_preddata
     </select>
+    <select id="promo_dateRange" resultType="hashMap">
+        select max(date),min(date) FROM model.mars_${data_source}_promo_scaledrd_date
+    </select>
+
 
 </mapper>

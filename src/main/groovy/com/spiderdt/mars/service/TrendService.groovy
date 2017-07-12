@@ -134,15 +134,24 @@ class TrendService {
 
     def querySpline(data_source, category_1, category_2, product_name) {
         def last_date = commonService.dateRange(data_source).max
+        def promo_last_date = commonService.promo_dateRange(data_source).max
         def c_list = commonService.handelCategory(category_1, category_2, product_name)
 
         slog.info("category list is " + c_list)
 
-        def map = [data_source: data_source,
-                   list       : c_list.c_list,
-                   last_date  : last_date,
-                   var        : c_list.var]
-        trendDao.querySpline(map)
+        def map = [data_source    : data_source,
+                   list           : c_list.c_list,
+                   last_date      : last_date,
+                   promo_last_date: promo_last_date,
+                   var            : c_list.var]
+        def data = trendDao.querySpline(map)
+        def promo_data = trendDao.queryPromoSpline(map)
+//        data += promo_data.collect {
+//            it.put("actual", 0.00)
+//            it.put("quantity", 0.00)
+//        }
+//        data
+        data + promo_data
     }
 
 

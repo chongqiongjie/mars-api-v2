@@ -21,6 +21,7 @@ interface TrendDao {
 
     ArrayList<Object> querySpline(map)
 
+    ArrayList<Object> queryPromoSpline(map)
 
 
 }

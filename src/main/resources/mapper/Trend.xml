@@ -139,7 +139,8 @@
         pay_date,
         sum(quantity - predacvbasevol) AS actual,
         sum(quantity) AS quantity
-        FROM (model.mars_${data_source}_sku_day_format format INNER JOIN A ON format.barcode = A.barcode AND format.pay_date = A.date)
+        FROM (model.mars_${data_source}_sku_day_format format INNER JOIN A ON format.barcode = A.barcode AND
+        format.pay_date = A.date)
         INNER JOIN model.mars_${data_source}_preddata pred ON A.ppg_id = pred.ppg_id AND format.pay_date = pred.date
         GROUP BY pay_date
         ORDER BY pay_date
@@ -156,5 +157,27 @@
         FROM effect
         INNER JOIN q ON effect.date = q.pay_date
     </select>
+    <select id="queryPromoSpline" resultType="hashmap">
+        SELECT
+        date,
+        sum(coupon) AS effect_coupon,
+        sum(debut) AS effect_debut,
+        sum(discount) AS effect_discount,
+        sum(ln_baseprice) AS effect_ln_baseprice,
+        sum(predacvbasevol - coupon - debut - discount - ln_baseprice) AS other
+        FROM model.mars_${data_source}_promo_scaledrd_date
+        WHERE DATE > #{last_date} AND DATE &lt;= #{promo_last_date}
+        <choose>
+            <when test="var != 'category_1'">
+                AND
+                <foreach item="c_list" collection="list" open="" separator="and" close="">
+                    ${c_list}
+                </foreach>
+            </when>
+        </choose>
+        GROUP BY date
+        ORDER BY date
+    </select>
+
 
 </mapper>
