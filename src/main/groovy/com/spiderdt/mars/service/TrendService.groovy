@@ -22,16 +22,21 @@ class TrendService {
 
     def getCategory(data_source) {
         def data = trendDao.queryCategory(data_source)
-        def result = data.groupBy {
+        def data1 = data.collect {
+            [category_1  : [name: it.category_1, id: it.cat1_id],
+             category_2  : [name: it.category_2, id: it.cat2_id],
+             product_name: [name: it.product_name, id: it.ppg_id]]
+        }
+        def result = data1.groupBy {
             it.category_1
         }.collectEntries { k, v ->
-            [item    : [name: (k)],
+            [item    : k,
              children: v.groupBy {
                  it.category_2
              }.collectEntries { k2, v2 ->
-                 [item    : [name: (k2)],
+                 [item    : k2,
                   children: v2.collect {
-                      [name: it.product_name]
+                      it.product_name
                   }]
              }]
         }
