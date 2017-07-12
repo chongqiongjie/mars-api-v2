@@ -41,9 +41,9 @@ class SubplanController {
         JSONObject json = new JSONObject()
         try {
             def data_source = "tutuanna"
-            def category_1 = request.getParameter("category_1")
-            def category_2 = request.getParameter("category_2")
-            def product_name = request.getParameter("product_name")
+            def category_1 = request.getParameterValues("category_1[]")
+            def category_2 = request.getParameterValues("category_2[]")
+            def product_name = request.getParameterValues("product_name[]")
             def last_month_avg = subplanService.queryLastMonthAvg(data_source, category_1, category_2, product_name)
             def last_date = commonService.dateRange(data_source).max
             def data = [avg_cat  : last_month_avg,
@@ -56,11 +56,21 @@ class SubplanController {
         }
         return ResponseEntity.status(HttpStatus.OK).body(json.toString())
     }
+
     @RequestMapping(value = "/createplan/subplan", method = RequestMethod.GET)
     @ResponseBody
     def listSubplan(@RequestBody params) {
         JSONObject json = new JSONObject()
-
+        try {
+            def user_name = "tutuanna"
+            def data = subplanService.listSubplan(user_name)
+            json = [status: "success",
+                    data  : data]
+        } catch (Exception e) {
+            json = [status : "failure",
+                    message: e.message]
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(json.toString())
     }
 
     @RequestMapping(value = "/createplan/subplan", method = RequestMethod.POST)
@@ -72,9 +82,9 @@ class SubplanController {
             def user_id = "tutuanna"
             def name = params.get("name")
             slog.info("name:" + name)
-            def category = params.get("category")
-            def group = params.get("group")
-            def product = params.get("product")
+            def category = params.get("category[]")
+            def group = params.get("group[]")
+            def product = params.get("product[]")
             def start_time = params.get("start_time")
             def end_time = params.get("end_time")
 
@@ -145,11 +155,16 @@ class SubplanController {
     @RequestMapping(value = "/plans/deletesubplan", method = RequestMethod.GET)
     @ResponseBody
     def delete(HttpServletRequest request) {
-        JSONObject response = new JSONObject()
-        def name = request.getParameter("name")
-        def user_name = "tutuanna"
-        subplanService.deleteSubplan(name,user_name)
-        response.put("status", "success")
-        return ResponseEntity.status(HttpStatus.OK).body(response.todef())
+        JSONObject json = new JSONObject()
+        try {
+            def name = request.getParameter("name")
+            def user_name = "tutuanna"
+            subplanService.deleteSubplan(name, user_name)
+            json.put("status", "success")
+        } catch (Exception e) {
+            json = [status : "failure",
+                    message: e.message]
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(json.toString())
     }
 }
