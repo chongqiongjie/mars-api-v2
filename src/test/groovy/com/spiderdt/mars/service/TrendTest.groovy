@@ -27,12 +27,12 @@ class TrendTest extends GroovyTestCase {
 
     @Test
     void queryProductQuantityTest() {
-        def data_source = "mars"
+        def data_source = "tutuanna"
         def category_1 = null
-//        def category_1 = 1.0000000000000000
-        def category_2 = 1.0000000000000000
+//        def category_1 = [1.0000000000000000]
+        def category_2 = [1.0000000000000000]
 //        def category_2 = null
-        def product_name = "tutuanna 打底裤 秋冬厚款里起毛厚绒保暖裤300D"
+        def product_name = ["tutuanna袜子薄款短筒袜 日系短袜 春夏女士棉袜"]
 //        def product_name = null
         def monthOrWeek = "month"
         slog.info trendService.queryProductQuantity(data_source, category_1, category_2, product_name, monthOrWeek)
@@ -40,25 +40,25 @@ class TrendTest extends GroovyTestCase {
 
     @Test
     void queryComparisonTest() {
-        def data_source = "mars"
+        def data_source = "tutuanna"
         def category_1 = null
-//        def category_1 = 1.0000000000000000
-        def category_2 = 1.0000000000000000
+//        def category_1 = [1.0000000000000000]
+        def category_2 = [1.0000000000000000]
 //        def category_2 = null
-//        def product_name = "tutuanna 打底裤 秋冬厚款里起毛厚绒保暖裤300D"
-        def product_name = null
+        def product_name = ["tutuanna 打底裤 秋冬厚款里起毛厚绒保暖裤300D"]
+//        def product_name = null
         def monthOrWeek = "month"
         slog.info trendService.queryComparison(data_source, category_1, category_2, product_name, monthOrWeek)
     }
 
     @Test
     void querySplineTest() {
-        def data_source = "mars"
+        def data_source = "tutuanna"
         def category_1 = null
-//        def category_1 = 1.0000000000000000
-        def category_2 = 1.0000000000000000
+//        def category_1 = [1.0000000000000000]
+        def category_2 = [1.0000000000000000]
 //        def category_2 = null
-//        def product_name = "tutuanna 打底裤 秋冬厚款里起毛厚绒保暖裤300D"
+//        def product_name = ["tutuanna 打底裤 秋冬厚款里起毛厚绒保暖裤300D"]
         def product_name = null
         slog.info trendService.querySpline(data_source, category_1, category_2, product_name)
     }

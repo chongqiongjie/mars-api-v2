@@ -24,7 +24,7 @@ class SubplanTest extends GroovyTestCase {
     @Test
     void queryDefaultSplineTest() {
         def data_source = "tutuanna"
-        def category_1 = null
+        def category_1 = [1.0000000000000000]
 //        def category_1 = 1.0000000000000000
 //        def category_2 = 1.0000000000000000
         def category_2 = null
@@ -83,5 +83,11 @@ class SubplanTest extends GroovyTestCase {
         subplanService.deleteSubplan(name, user_name)
     }
 
-
+    @Test
+    void test(){
+        def a = ["a","b","c"]
+        if(a.size()!=0){
+            println "category_1 in" + a.toString().replace("[","('").replace("]","')").replace(", ","','")
+        }
+    }
 }
