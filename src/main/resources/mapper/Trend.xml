@@ -5,13 +5,12 @@
 <mapper namespace="com.spiderdt.mars.dao.TrendDao">
 
     <select id="queryCategory" resultType="hashmap">
-      select category_1,category_2,product_name from
-        model.mars_${data_source}_promo_scaledrd_date product
-        GROUP BY category_1, category_2, product_name
+      select distinct cat1_id,category_1,car2_id,category_2,ppg_id,product_name from
+        model.mars_${data_source}_promo_scaledrd_date
     </select>
     <select id="queryAllProduct" resultType="hashmap">
       select DISTINCT product_name from
-        model.mars_${data_source}_promo_scaledrd_date product
+        model.mars_${data_source}_promo_scaledrd_date
     </select>
 
     <select id="queryCategoryQuantity" resultType="hashmap">
