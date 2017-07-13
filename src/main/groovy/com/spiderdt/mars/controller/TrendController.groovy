@@ -34,9 +34,11 @@ class TrendController {
         try {
             def data = trendService.getCategory(data_source)
             def all_product = trendService.queryAllProduct(data_source)
-            json = [status     : "success",
-                    data       : data,
-                    all_product: all_product]
+            def category_List = trendService.getCategoryList(data_source)
+            json = [status       : "success",
+                    data         : data,
+                    category_list: category_List,
+                    all_product  : all_product]
         } catch (Exception e) {
             json = [status : "failure",
                     message: e.message]
