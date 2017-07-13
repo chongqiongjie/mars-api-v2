@@ -6,6 +6,8 @@ import com.spiderdt.mars.util.Slog
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
+import java.util.concurrent.ArrayBlockingQueue
+
 /**
  * Created by kun on 2017/4/6.
  */
@@ -20,23 +22,33 @@ class TrendService {
     @Autowired
     Slog slog
 
+
     def getCategory(data_source) {
         def data = trendDao.queryCategory(data_source)
-        def result = data.groupBy {
+        def data1 = data.collect {
+            [category_1  : [name: it.category_1, id: it.cat1_id],
+             category_2  : [name: it.category_2, id: it.cat2_id],
+             product_name: [name: it.product_name, id: it.ppg_id]]
+        }
+        def result = data1.groupBy {
             it.category_1
         }.collectEntries { k, v ->
-            [item    : [name: (k)],
+            [item    : k,
              children: v.groupBy {
                  it.category_2
              }.collectEntries { k2, v2 ->
-                 [item    : [name: (k2)],
+                 [item    : k2,
                   children: v2.collect {
-                      [name: it.product_name]
+                      it.product_name
                   }]
              }]
         }
+        println("result:" + result)
         result
+
+
     }
+
 
     def queryAllProduct(data_source) {
         trendDao.queryAllProduct(data_source)
@@ -77,6 +89,7 @@ class TrendService {
          "other_${monthOrWeek}_quantity"   : other,
          "bottom10_${monthOrWeek}_quantity": bottom10]
     }
+
 
     def queryComparison(data_source, category_1, category_2, product_name, monthOrWeek) {
         def last_date = commonService.dateRange(data_source).max
@@ -126,7 +139,7 @@ class TrendService {
             tb_bottom10 = tb_data[tb_data.size() - 1..0]
         }
 
-        ["top10_${monthOrWeek}_hb"   : hb_top10,
+        ["top10_${monthOrWeek}_hb"  : hb_top10,
          "bottom10_${monthOrWeek}_hb": hb_bottom10,
          "top10_${monthOrWeek}_tb"   : tb_top10,
          "bottom10_${monthOrWeek}_tb": tb_bottom10]

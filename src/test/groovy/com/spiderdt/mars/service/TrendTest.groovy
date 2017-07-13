@@ -21,7 +21,7 @@ class TrendTest extends GroovyTestCase {
 
     @Test
     void categoryTest() {
-        def data_source = "mars"
+        def data_source = "tutuanna"
         slog.info trendService.getCategory(data_source)
     }
 
