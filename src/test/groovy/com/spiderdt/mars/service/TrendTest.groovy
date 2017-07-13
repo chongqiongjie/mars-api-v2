@@ -26,6 +26,12 @@ class TrendTest extends GroovyTestCase {
     }
 
     @Test
+    void getCategoryListTest() {
+        def data_source = "tutuanna"
+        slog.info trendService.getCategoryList(data_source)
+    }
+
+    @Test
     void queryProductQuantityTest() {
         def data_source = "tutuanna"
         def category_1 = null

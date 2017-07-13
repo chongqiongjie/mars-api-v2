@@ -50,6 +50,24 @@ class TrendService {
     }
 
 
+    def getCategoryList(data_source) {
+        def data = trendDao.queryCategory(data_source)
+        Set category2_list = data.collect {
+            [category_1: it.category_1,
+             cat1_id   : it.cat1_id,
+             category_2: it.category_2,
+             cat2_id   : it.cat2_id]
+        }
+        Set category1_list = category2_list.collect {
+            [category_1: it.category_1,
+             cat1_id   : it.cat1_id]
+        }
+        [category1_list: category1_list,
+         category2_list: category2_list,
+         product_list  : data]
+    }
+
+
     def queryAllProduct(data_source) {
         trendDao.queryAllProduct(data_source)
     }
