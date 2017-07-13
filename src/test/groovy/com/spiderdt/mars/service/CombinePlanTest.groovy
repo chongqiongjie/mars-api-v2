@@ -37,7 +37,7 @@ class CombinePlanTest {
         String user_name = "q1"
         def start_time = "2017-01-01"
         def end_time = "2017-01-10"
-        String status = "success"
+        def status
         List subplan_id_list = [1,2]
         println combinePlanService.createBigPlan(name,user_name,start_time,end_time,status,subplan_id_list)
     }
@@ -47,5 +47,16 @@ class CombinePlanTest {
     void deleteBigPlan(){
         int id = 1
         println combinePlanService.deleteBigPlan(id)
+    }
+
+    @Test
+    void updateBigPlan(){
+        int id = 2
+        String name = "q"
+        String user_name = "q"
+        def start_time = "2017-01-02"
+        def end_time = "2017-01-12"
+        List subplan_id_list = [1,2,3]
+        println combinePlanService.updateBigPlan(id,name,user_name,start_time,end_time,subplan_id_list)
     }
 }

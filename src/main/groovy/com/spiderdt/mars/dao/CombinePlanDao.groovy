@@ -14,4 +14,5 @@ interface CombinePlanDao {
     ArrayList<Object> combinePlan(@Param("id") int id)
     ArrayList<Object> combinePlanResult(@Param("id") int id)
     void deleteBigPlan(@Param("id") int id)
+    void updateBigPlan(@Param("id") int id,@Param("name") String name, @Param("user_name") String user_name, @Param("start_time") String start_time, @Param("end_time") String end_time, @Param("subplan_id") String subplan_id)
 }

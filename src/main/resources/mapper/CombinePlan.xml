@@ -5,7 +5,7 @@
 <mapper namespace="com.spiderdt.mars.dao.CombinePlanDao">
     <insert id="createBigPlan">
         insert into mars.mars_combine_subplan (name,user_name,start_time,end_time,status,subplan_id)
-        values (#{name},#{user_name},#{start_time},#{end_time},#{status},#{subplan_id})
+        values (#{name},#{user_name},#{start_time},#{end_time},'new',#{subplan_id})
     </insert>
 
     <select id="combinePlan" resultType="hashmap">
@@ -25,8 +25,10 @@
         update mars.mars_combine_subplan set status = 'del' where id = #{id}
     </update>
 
-    
-
+    <update id="updateBigPlan">
+        update mars.mars_combine_subplan set name = #{name},user_name = #{user_name},start_time = #{start_time},
+        end_time = #{end_time},subplan_id = #{subplan_id} where id = #{id} and status != 'del'
+    </update>
 
 
 

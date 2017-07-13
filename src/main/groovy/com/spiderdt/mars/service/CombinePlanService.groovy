@@ -31,5 +31,8 @@ class CombinePlanService {
         return combinePlanDao.deleteBigPlan(id)
     }
 
+    def updateBigPlan(id,name, user_name, start_time, end_time, subplan_id){
+        return combinePlanDao.updateBigPlan(id,name, user_name, start_time, end_time, JsonOutput.toJson(subplan_id))
+    }
 
 }

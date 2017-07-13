@@ -33,10 +33,10 @@ class CombinePlanController {
             def user_name = "tutuanna"
             def start_time = params.get("start_time")
             def end_time = params.get("end_time")
-            def status = params.get("status")
+            def status
             slog.info("status:" + status)
             def subplan_id = params.get("subplan_id")
-            slog.info("subplan_id++:" + subplan_id)
+            slog.info("subplan_id++:" + subplan_id.class)
             combinePlanService.createBigPlan(name, user_name, start_time, end_time, status, subplan_id)
 
             response = [status: "success"]
@@ -108,5 +108,31 @@ class CombinePlanController {
         return ResponseEntity.status(HttpStatus.OK).body(response.toString())
     }
 
+
+    @RequestMapping(value = "/plans/updatebigplans", method = RequestMethod.POST)
+    @ResponseBody
+    def updateBigPlan(@RequestBody Map<String, Object> params) {
+        JSONObject response = new JSONObject()
+        try {
+            def id = params.get("id")
+            def id1 = Integer.parseInt(id)
+            println("id1:" + id1)
+            def name = params.get("name")
+            def user_name = "tutuanna"
+            def start_time = params.get("start_time")
+            def end_time = params.get("end_time")
+            def subplan_id = params.get("subplan_id")
+            slog.info("subplan_id++:" + subplan_id)
+
+
+            combinePlanService.updateBigPlan(id1,name,user_name,start_time,end_time,subplan_id)
+
+            response = [status: "success"]
+        } catch (Exception e) {
+            response = [status : "failure",
+                        message: e.message]
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response.toString())
+    }
 
 }
