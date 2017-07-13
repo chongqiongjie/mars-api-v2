@@ -1,6 +1,7 @@
 package com.spiderdt.mars.controller
 
 import com.spiderdt.mars.service.TrendService
+import com.spiderdt.mars.util.Sredis
 import org.json.JSONObject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -21,6 +22,9 @@ class TrendController {
 
     @Autowired
     TrendService trendService
+
+    @Autowired
+    Sredis sredis
 
     @RequestMapping(value = "/trend/category", method = RequestMethod.GET)
     @ResponseBody
@@ -46,9 +50,9 @@ class TrendController {
         JSONObject json = new JSONObject()
         try {
             def data_source = "tutuanna"
-            def category_1 = request.getParameter("category_1")
-            def category_2 = request.getParameter("category_2")
-            def product_name = request.getParameter("product_name")
+            def category_1 = request.getParameterValues("category_1[]")
+            def category_2 = request.getParameterValues("category_2[]")
+            def product_name = request.getParameterValues("product_name[]")
             def data = trendService.querySpline(data_source, category_1, category_2, product_name)
             json = [status: "success",
                     data  : data]
@@ -65,9 +69,9 @@ class TrendController {
         JSONObject json = new JSONObject()
         try {
             def data_source = "tutuanna"
-            def category_1 = request.getParameter("category_1")
-            def category_2 = request.getParameter("category_2")
-            def product_name = request.getParameter("product_name")
+            def category_1 = request.getParameterValues("category_1[]")
+            def category_2 = request.getParameterValues("category_2[]")
+            def product_name = request.getParameterValues("product_name[]")
             def time = ["month", "week"]
             def data = time.collect {
                 trendService.queryProductQuantity(data_source, category_1, category_2, product_name, it)
@@ -87,9 +91,9 @@ class TrendController {
         JSONObject json = new JSONObject()
         try {
             def data_source = "tutuanna"
-            def category_1 = request.getParameter("category_1")
-            def category_2 = request.getParameter("category_2")
-            def product_name = request.getParameter("product_name")
+            def category_1 = request.getParameterValues("category_1[]")
+            def category_2 = request.getParameterValues("category_2[]")
+            def product_name = request.getParameterValues("product_name[]")
             def time = ["month", "week"]
             def data = time.collect {
                 trendService.queryComparison(data_source, category_1, category_2, product_name, it)

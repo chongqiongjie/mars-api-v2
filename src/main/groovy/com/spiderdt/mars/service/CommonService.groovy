@@ -16,8 +16,12 @@ class CommonService {
         commonDao.dateRange(data_source)
     }
 
+    def promo_dateRange(data_source) {
+        commonDao.promo_dateRange(data_source)
+    }
+
     def listToString(list) {
-        list.toString().replace("[", "('").replace("]", "')").replace(",", "','").replace("' ", "'").replace(" '","'")
+        list.toString().replace("[", "('").replace("]", "')").replace(",", "','").replace("' ", "'").replace(" '", "'")
     }
 
     def handelCategory(category_1, category_2, product_name) {

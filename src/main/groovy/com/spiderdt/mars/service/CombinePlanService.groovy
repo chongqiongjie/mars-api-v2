@@ -1,6 +1,7 @@
 package com.spiderdt.mars.service
 
 import com.spiderdt.mars.dao.CombinePlanDao
+import groovy.json.JsonOutput
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -14,19 +15,19 @@ class CombinePlanService {
     @Autowired
     CombinePlanDao combinePlanDao
 
-    def combinePlan(int id) {
+    def combinePlan(id) {
         return combinePlanDao.combinePlan(id)
     }
 
-    def combinePlanResult(int id) {
+    def combinePlanResult(id) {
         return combinePlanDao.combinePlanResult(id).get(0)
     }
 
-    def createBigPlan(String name, String user_name, String start_time, String end_time, String status, String subplan_id) {
-        return combinePlanDao.createBigPlan(name, user_name, start_time, end_time, status, subplan_id)
+    def createBigPlan(name, user_name, start_time, end_time, status, subplan_id) {
+        return combinePlanDao.createBigPlan(name, user_name, start_time, end_time, status, JsonOutput.toJson(subplan_id))
     }
 
-    def deleteBigPlan(int id){
+    def deleteBigPlan(id) {
         return combinePlanDao.deleteBigPlan(id)
     }
 

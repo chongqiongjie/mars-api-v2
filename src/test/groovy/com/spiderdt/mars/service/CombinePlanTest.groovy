@@ -33,14 +33,13 @@ class CombinePlanTest {
 
     @Test
     void createBigPlan(){
-        String name = "q"
-        String user_name = "q"
+        String name = "q1"
+        String user_name = "q1"
         def start_time = "2017-01-01"
         def end_time = "2017-01-10"
         String status = "success"
         List subplan_id_list = [1,2]
-        String subplan_id = subplan_id_list.toListString()
-        println combinePlanService.createBigPlan(name,user_name,start_time,end_time,status,subplan_id)
+        println combinePlanService.createBigPlan(name,user_name,start_time,end_time,status,subplan_id_list)
     }
 
 

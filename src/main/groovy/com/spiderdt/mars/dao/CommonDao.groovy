@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository
 interface CommonDao {
 
     Object dateRange(@Param("data_source") data_source)
+
+    Object promo_dateRange(@Param("data_source") data_source)
 }

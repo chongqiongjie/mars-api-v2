@@ -85,9 +85,9 @@ class SubplanTest extends GroovyTestCase {
 
     @Test
     void test(){
-        def a = ["a","b","c"]
+        List a = ["a","b","c"]
         if(a.size()!=0){
-            println "category_1 in" + a.toString().replace("[","('").replace("]","')").replace(", ","','")
+            println "category_1 in" + a.toListString().replace("[","('").replace("]","')").replace(", ","','")
         }
     }
 }
